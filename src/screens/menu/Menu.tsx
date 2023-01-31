@@ -2,9 +2,6 @@ import {View, Text} from 'react-native';
 import React from 'react';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {FlashList} from '@shopify/flash-list';
-import {clearKeychain} from '../../helpers/keychain/keychainHelpers';
-import {defaultAuth} from '../../redux/auth/authSlice';
-import {Button} from '@rneui/base';
 import {useQuery} from '@tanstack/react-query';
 import {fetchMeals} from '../../helpers/menu/menuHelpers';
 
@@ -21,15 +18,9 @@ const Menu = () => {
     onSuccess: response => response.map(meal => console.log(meal._id)),
   });
 
-  const handleLogout = async () => {
-    await clearKeychain();
-    dispatch(defaultAuth());
-  };
-
   return (
     <View>
       <Text>{`Welcome ${firstName} ${lastName}`}</Text>
-      <Button onPress={handleLogout}>Logout</Button>
     </View>
   );
 };
