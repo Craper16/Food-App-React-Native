@@ -21,8 +21,6 @@ const Menu = () => {
     onSuccess: response => response.map(meal => console.log(meal._id)),
   });
 
-  console.log(isFetching);
-
   const handleLogout = async () => {
     await clearKeychain();
     dispatch(defaultAuth());
@@ -30,7 +28,7 @@ const Menu = () => {
 
   return (
     <View>
-      <Text>{`Welcome ${firstName}`}</Text>
+      <Text>{`Welcome ${firstName} ${lastName}`}</Text>
       <Button onPress={handleLogout}>Logout</Button>
     </View>
   );

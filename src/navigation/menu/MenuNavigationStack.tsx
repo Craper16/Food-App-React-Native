@@ -3,7 +3,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import Menu from '../../screens/menu/Menu';
 
-type MenuStackParams = {
+export type MenuStackParams = {
   Menu: undefined;
 };
 

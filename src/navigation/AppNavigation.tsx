@@ -6,10 +6,11 @@ import {useAppSelector} from '../redux/hooks';
 import {createStackNavigator} from '@react-navigation/stack';
 import {AuthScreenStack} from './auth/AuthNavigation';
 import {MenuScreenStack} from './menu/MenuNavigationStack';
+import {BottomRootStack} from './bottomRootStack/BottomNavigator';
 
 export type RootStackParams = {
   AuthStack: undefined;
-  MenuStack: undefined;
+  BottomRootStack: undefined;
 };
 
 const RootStack = createStackNavigator<RootStackParams>();
@@ -19,7 +20,9 @@ const AppNavigation = () => {
 
   return (
     <NavigationContainer>
-      <RootStack.Navigator initialRouteName="AuthStack">
+      <RootStack.Navigator
+        initialRouteName="AuthStack"
+        screenOptions={{headerShown: false}}>
         {!isAuth && (
           <RootStack.Screen
             name="AuthStack"
@@ -28,7 +31,10 @@ const AppNavigation = () => {
           />
         )}
         {isAuth && (
-          <RootStack.Screen name="MenuStack" component={MenuScreenStack} />
+          <RootStack.Screen
+            name="BottomRootStack"
+            component={BottomRootStack}
+          />
         )}
       </RootStack.Navigator>
     </NavigationContainer>
