@@ -7,7 +7,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {Formik} from 'formik';
 import {Colors} from '../../constants/colors/colorsConsts';
@@ -18,9 +18,10 @@ import {useMutation, useQuery} from '@tanstack/react-query';
 import {getUserData, signInUser} from '../../helpers/auth/authHelpers';
 import {
   ErrorResponse,
+  SigninData,
   userDataModel,
 } from '../../interfaces/auth/authInterfaces';
-import {useAppDispatch} from '../../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {setUser, setUserTokens} from '../../redux/auth/authSlice';
 import {setKeychainTokens} from '../../helpers/keychain/keychainHelpers';
 import {StackScreenProps} from '@react-navigation/stack';
@@ -35,21 +36,30 @@ const Signin = ({navigation}: props) => {
 
   const [viewPassword, setViewPassword] = useState(true);
 
-  const userQuery = useQuery({
+  const {refetch} = useQuery({
     queryKey: ['userData'],
     queryFn: getUserData,
+    enabled: false,
     refetchOnMount: false,
+    cacheTime: 0,
   });
 
-  const {error, isError, isLoading, mutate} = useMutation({
+  const {error, isError, isLoading, mutate, data, isSuccess} = useMutation({
     mutationFn: signInUser,
-    onSuccess: async response => {
-      await setKeychainTokens(response.access_token, response.refresh_token);
-      await userQuery.refetch();
-      dispatch(setUser({...(userQuery.data as userDataModel)}));
-      dispatch(setUserTokens({...response}));
-    },
   });
+
+  const handleStoreData = async (loginData: SigninData) => {
+    await setKeychainTokens(loginData.access_token, loginData.refresh_token);
+    const {data} = await refetch();
+    dispatch(setUser({...data!}));
+    dispatch(setUserTokens({...loginData}));
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      handleStoreData(data);
+    }
+  }, [isSuccess]);
 
   return (
     <Formik
