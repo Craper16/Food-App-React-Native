@@ -26,7 +26,9 @@ const Meals = ({mealData, onAddToOrder}: props) => {
         <Text style={styles.descStyle}>{mealData.description}</Text>
         <Text style={styles.priceStyle}>{`$${mealData.price}`}</Text>
       </View>
-      <Button>Add to Order</Button>
+      <Button color="secondary" onPress={onAddToOrder}>
+        Add to Order
+      </Button>
     </Card>
   );
 };

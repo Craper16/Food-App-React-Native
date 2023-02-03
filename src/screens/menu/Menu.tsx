@@ -61,7 +61,7 @@ const Menu = ({navigation}: props) => {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => navigate('MealDetails', {mealId: item._id})}>
-        <Meals mealData={item} onAddToOrder={() => console.log('Its rinning')} />
+        <Meals mealData={item} onAddToOrder={() => console.log(item.title)} />
       </TouchableOpacity>
     );
   };

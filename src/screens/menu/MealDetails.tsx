@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
     color: Colors.secondary,
     textAlign: 'center',
     margin: 15,
+    fontSize: 18,
   },
   apiError: {
     fontSize: 20,
