@@ -15,3 +15,16 @@ export const fetchMeals = async (): Promise<MealData[]> => {
 
   return data;
 };
+
+export const fetchMeal = async (mealId: string): Promise<MealData> => {
+  const access_token = await fetchAccessToken();
+
+  const response = await instance.get(`/meals/${mealId}`, {
+    headers: {
+      Authorization: `Bearer ${(access_token as UserCredentials).username}`,
+    },
+  });
+
+  const data: MealData = response.data.meal;
+  return data;
+};

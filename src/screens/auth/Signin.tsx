@@ -41,6 +41,7 @@ const Signin = ({navigation}: props) => {
     queryFn: getUserData,
     enabled: false,
     refetchOnMount: false,
+    refetchOnWindowFocus: false,
     cacheTime: 0,
   });
 
