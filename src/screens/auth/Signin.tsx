@@ -36,7 +36,7 @@ const Signin = ({navigation}: props) => {
 
   const [viewPassword, setViewPassword] = useState(true);
 
-  const {refetch} = useQuery({
+  const {refetch, isFetching} = useQuery({
     queryKey: ['userData'],
     queryFn: getUserData,
     enabled: false,
@@ -145,8 +145,8 @@ const Signin = ({navigation}: props) => {
                 <Button
                   buttonStyle={{borderRadius: 24}}
                   color="secondary"
-                  disabled={!isValid || isLoading}
-                  loading={isLoading}
+                  disabled={!isValid || isLoading || isFetching}
+                  loading={isLoading || isFetching}
                   onPress={handleSubmit}>
                   Login
                 </Button>

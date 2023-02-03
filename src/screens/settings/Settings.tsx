@@ -6,6 +6,7 @@ import {clearKeychain} from '../../helpers/keychain/keychainHelpers';
 import {Button} from '@rneui/base';
 import {useQuery} from '@tanstack/react-query';
 import {getUserData} from '../../helpers/auth/authHelpers';
+import {defaultMeals} from '../../redux/meals/mealsSlice';
 
 const Settings = () => {
   const dispatch = useAppDispatch();
@@ -18,6 +19,7 @@ const Settings = () => {
   const handleLogout = async () => {
     await clearKeychain();
     dispatch(defaultAuth());
+    dispatch(defaultMeals());
   };
 
   return (
