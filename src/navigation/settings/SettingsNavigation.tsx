@@ -12,7 +12,11 @@ const SettingsNavigatorStack = createStackNavigator<SettingsStackParams>();
 export const SettingsScreenStack = () => {
   return (
     <SettingsNavigatorStack.Navigator>
-      <SettingsNavigatorStack.Screen name="Settings" component={Settings} />
+      <SettingsNavigatorStack.Screen
+        name="Settings"
+        component={Settings}
+        options={{headerShown: false}}
+      />
     </SettingsNavigatorStack.Navigator>
   );
 };

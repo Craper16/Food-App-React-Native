@@ -15,6 +15,7 @@ export const CategoriesScreenStack = () => {
       <CategoriesNavigatorStack.Screen
         name="Categories"
         component={Categories}
+        options={{headerShown: false}}
       />
     </CategoriesNavigatorStack.Navigator>
   );

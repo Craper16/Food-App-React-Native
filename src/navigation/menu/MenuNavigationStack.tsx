@@ -14,8 +14,16 @@ const MenuStackNavigator = createStackNavigator<MenuStackParams>();
 export const MenuScreenStack = () => {
   return (
     <MenuStackNavigator.Navigator>
-      <MenuStackNavigator.Screen name="Menu" component={Menu} />
-      <MenuStackNavigator.Screen name="MealDetails" component={MealDetails} />
+      <MenuStackNavigator.Screen
+        name="Menu"
+        component={Menu}
+        options={{headerShown: false}}
+      />
+      <MenuStackNavigator.Screen
+        name="MealDetails"
+        component={MealDetails}
+        options={{headerShown: false}}
+      />
     </MenuStackNavigator.Navigator>
   );
 };
