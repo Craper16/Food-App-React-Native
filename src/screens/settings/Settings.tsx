@@ -9,21 +9,23 @@ import {Colors} from '../../constants/colors/colorsConsts';
 import {Icon} from '@rneui/themed';
 import {StackScreenProps} from '@react-navigation/stack';
 import {SettingsStackParams} from '../../navigation/settings/SettingsNavigation';
+import {defaultOrders} from '../../redux/orders/ordersSlice';
 
 type props = StackScreenProps<SettingsStackParams, 'Settings'>;
 
 const Settings = ({navigation}: props) => {
+  const {navigate} = navigation;
   const dispatch = useAppDispatch();
 
   const handleLogout = async () => {
     await clearKeychain();
     dispatch(defaultAuth());
     dispatch(defaultMeals());
+    dispatch(defaultOrders());
   };
 
   return (
     <View style={styles.screen}>
-      <Text>Settings</Text>
       <Button
         icon={
           <Icon
@@ -34,7 +36,8 @@ const Settings = ({navigation}: props) => {
           />
         }
         color="secondary"
-        style={styles.actions}>
+        style={styles.actions}
+        onPress={() => navigate('Account')}>
         Account
       </Button>
       <Button

@@ -39,3 +39,21 @@ export const signUpValidations = yup.object().shape({
     .required('Phone number required')
     .max(8, 'Phone number must not exceed 8 characters'),
 });
+
+export const updateUserValidations = yup.object().shape({
+  firstName: yup
+    .string()
+    .required('First name must not be empty')
+    .max(30, 'First name must be between 3 and 30 characters')
+    .min(3, 'First name must be between 3 and 30 characters'),
+  lastName: yup
+    .string()
+    .required('Last name must not be empty')
+    .max(30, 'Last name must be between 3 and 30 characters')
+    .min(3, 'Last name must be between 3 and 30 characters'),
+  phoneNumber: yup
+    .string()
+    .required('Phone number required')
+    .max(8, 'Phone number must not exceed 8 characters'),
+  address: yup.string().max(400, 'Address must not exceed 400 characters'),
+});

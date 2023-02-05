@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {NavigationContainer} from '@react-navigation/native';
 
@@ -7,8 +7,11 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {AuthScreenStack} from './auth/AuthNavigation';
 import {BottomRootStack} from './bottomRootStack/BottomNavigator';
 import {Badge, Icon} from '@rneui/themed';
-import {View} from 'react-native';
+import {ScrollView, View} from 'react-native';
 import OrderOverlay from '../components/orders/OrderOverlay';
+import {useMutation} from '@tanstack/react-query';
+import {addOrder} from '../helpers/orders/ordersHelpers';
+import {ErrorResponse} from '../interfaces/auth/authInterfaces';
 
 export type RootStackParams = {
   AuthStack: undefined;
@@ -18,10 +21,17 @@ export type RootStackParams = {
 const RootStack = createStackNavigator<RootStackParams>();
 
 const AppNavigation = () => {
-  const isAuth = useAppSelector(state => !!state.auth.access_token);
-
   const [openOverlay, setOpenOverlay] = useState(false);
   const [comments, setComments] = useState('');
+
+  const isAuth = useAppSelector(state => !!state.auth.access_token);
+  const {meals, total} = useAppSelector(state => state.orders);
+
+  console.log(meals);
+
+  const {data, error, isError, isLoading, mutate} = useMutation({
+    mutationFn: addOrder,
+  });
 
   return (
     <NavigationContainer>
@@ -50,17 +60,29 @@ const AppNavigation = () => {
                   />
                   <Badge
                     status="success"
-                    value={1}
+                    value={meals.length}
                     containerStyle={{position: 'absolute', top: -6, right: 5}}
                   />
-                  <OrderOverlay
-                    isVisible={openOverlay}
-                    toggleOverlay={() =>
-                      setOpenOverlay(prevOpenOverlay => !prevOpenOverlay)
-                    }
-                    comments={comments}
-                    onCommentTextChange={(text) => setComments(text)}
-                  />
+                  <ScrollView>
+                    <OrderOverlay
+                      total={total}
+                      meals={meals}
+                      buttonLoading={isLoading}
+                      isVisible={openOverlay}
+                      toggleOverlay={() =>
+                        setOpenOverlay(prevOpenOverlay => !prevOpenOverlay)
+                      }
+                      comments={comments}
+                      onCommentTextChange={text => setComments(text)}
+                      onOrderNow={() => mutate({meals, upgrades: [], comments})}
+                      errorMessage={
+                        (error as ErrorResponse)?.response?.data?.message ||
+                        (error as Error)?.message ||
+                        null
+                      }
+                      isError={isError}
+                    />
+                  </ScrollView>
                 </View>
               ),
             }}

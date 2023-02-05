@@ -14,6 +14,13 @@ export interface signUpDataModel {
   phoneNumber: number;
 }
 
+export interface updateUserModel {
+  firstName: string;
+  lastName: string;
+  phoneNumber: number;
+  address: string;
+}
+
 export interface ErrorResponse extends Error {
   response: {data: {message: string}};
 }

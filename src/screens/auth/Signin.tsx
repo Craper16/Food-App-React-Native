@@ -19,9 +19,8 @@ import {getUserData, signInUser} from '../../helpers/auth/authHelpers';
 import {
   ErrorResponse,
   SigninData,
-  userDataModel,
 } from '../../interfaces/auth/authInterfaces';
-import {useAppDispatch, useAppSelector} from '../../redux/hooks';
+import {useAppDispatch} from '../../redux/hooks';
 import {setUser, setUserTokens} from '../../redux/auth/authSlice';
 import {setKeychainTokens} from '../../helpers/keychain/keychainHelpers';
 import {StackScreenProps} from '@react-navigation/stack';

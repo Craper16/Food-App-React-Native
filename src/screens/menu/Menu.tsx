@@ -23,6 +23,7 @@ import {MealData} from '../../interfaces/meals/mealsInterfaces';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MenuStackParams} from '../../navigation/menu/MenuNavigationStack';
 import {SearchBar} from '@rneui/themed';
+import {addMeal} from '../../redux/orders/ordersSlice';
 
 type props = StackScreenProps<MenuStackParams, 'Menu'>;
 
@@ -61,7 +62,7 @@ const Menu = ({navigation}: props) => {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => navigate('MealDetails', {mealId: item._id})}>
-        <Meals mealData={item} onAddToOrder={() => console.log(item.title)} />
+        <Meals mealData={item} onAddToOrder={() => dispatch(addMeal(item))} />
       </TouchableOpacity>
     );
   };

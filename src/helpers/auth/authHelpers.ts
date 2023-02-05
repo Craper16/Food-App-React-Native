@@ -4,6 +4,7 @@ import {
   SigninData,
   SignupData,
   signUpDataModel,
+  updateUserModel,
   userDataModel,
 } from '../../interfaces/auth/authInterfaces';
 import {instance} from '../base';
@@ -22,7 +23,7 @@ export const signUpUser = async (
   userData: signUpDataModel,
 ): Promise<SignupData> => {
   const response = await instance.post('/auth/signup', userData);
-  
+
   const data: SignupData = response.data;
   return data;
 };
@@ -31,6 +32,19 @@ export const getUserData = async (): Promise<userDataModel> => {
   const access_token = await fetchAccessToken();
 
   const response = await instance.get('/auth/me', {
+    headers: {
+      Authorization: `Bearer ${(access_token as UserCredentials).username}`,
+    },
+  });
+
+  const data: userDataModel = response.data;
+  return data;
+};
+
+export const updateUser = async (updateData: updateUserModel) => {
+  const access_token = await fetchAccessToken();
+
+  const response = await instance.put('/auth/update-user', updateData, {
     headers: {
       Authorization: `Bearer ${(access_token as UserCredentials).username}`,
     },
