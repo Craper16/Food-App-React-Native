@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 
 import {NavigationContainer} from '@react-navigation/native';
 
-import {useAppSelector} from '../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {createStackNavigator} from '@react-navigation/stack';
 import {AuthScreenStack} from './auth/AuthNavigation';
 import {BottomRootStack} from './bottomRootStack/BottomNavigator';
@@ -12,6 +12,7 @@ import OrderOverlay from '../components/orders/OrderOverlay';
 import {useMutation} from '@tanstack/react-query';
 import {addOrder} from '../helpers/orders/ordersHelpers';
 import {ErrorResponse} from '../interfaces/auth/authInterfaces';
+import {defaultOrders} from '../redux/orders/ordersSlice';
 
 export type RootStackParams = {
   AuthStack: undefined;
@@ -21,6 +22,8 @@ export type RootStackParams = {
 const RootStack = createStackNavigator<RootStackParams>();
 
 const AppNavigation = () => {
+  const dispatch = useAppDispatch();
+
   const [openOverlay, setOpenOverlay] = useState(false);
   const [comments, setComments] = useState('');
 
@@ -29,9 +32,17 @@ const AppNavigation = () => {
 
   console.log(meals);
 
-  const {data, error, isError, isLoading, mutate} = useMutation({
+  const {data, error, isError, isLoading, mutate, isSuccess} = useMutation({
     mutationFn: addOrder,
   });
+
+  console.log(data);
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(defaultOrders());
+    }
+  }, [isSuccess, dispatch]);
 
   return (
     <NavigationContainer>

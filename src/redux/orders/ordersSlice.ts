@@ -17,6 +17,7 @@ const ordersSlice = createSlice({
   reducers: {
     defaultOrders: state => {
       state.meals = initialState.meals;
+      state.total = initialState.total;
     },
     addMeal: (state, action: PayloadAction<MealData>) => {
       state.meals = [action.payload, ...state.meals];

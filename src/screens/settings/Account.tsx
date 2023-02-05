@@ -5,17 +5,21 @@ import {
   ScrollView,
   KeyboardAvoidingView,
 } from 'react-native';
-import React, {useState} from 'react';
-import {useAppSelector} from '../../redux/hooks';
+import React, {useEffect, useState} from 'react';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {Colors} from '../../constants/colors/colorsConsts';
-import {Button, Input} from '@rneui/themed';
+import {Input} from '@rneui/themed';
+import {Button} from '@rneui/base';
 import {Formik} from 'formik';
 import {updateUserValidations} from '../../validations/authValidations';
 import {useMutation} from '@tanstack/react-query';
 import {updateUser} from '../../helpers/auth/authHelpers';
 import {ErrorResponse} from '../../interfaces/auth/authInterfaces';
+import {setUser} from '../../redux/auth/authSlice';
 
 const Account = () => {
+  const dispatch = useAppDispatch();
+
   const [isInEditMode, setIsInEditMode] = useState(false);
 
   const {email, firstName, lastName, phoneNumber, address} = useAppSelector(
@@ -26,7 +30,20 @@ const Account = () => {
     mutationFn: updateUser,
   });
 
-  console.log(data);
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(
+        setUser({
+          email: data.email,
+          address: data.address,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          phoneNumber: data.phoneNumber,
+        }),
+      );
+      setIsInEditMode(prevIsInEditMode => !prevIsInEditMode);
+    }
+  }, [isSuccess, dispatch]);
 
   return isInEditMode ? (
     <Formik
@@ -36,15 +53,15 @@ const Account = () => {
         phoneNumber: phoneNumber!.toString(),
         address: address || '',
       }}
-      validateOnMount={true}
       onSubmit={values =>
         mutate({
           firstName: values.firstName,
-          address: values.address,
           lastName: values.lastName,
           phoneNumber: +values.phoneNumber,
+          address: values.address,
         })
       }
+      validateOnMount={true}
       validationSchema={updateUserValidations}>
       {({
         handleBlur,
@@ -69,7 +86,7 @@ const Account = () => {
                 autoCorrect={false}
                 inputStyle={{color: Colors.secondary}}
                 value={values.firstName}
-                onChange={handleChange('firstName')}
+                onChangeText={handleChange('firstName')}
                 onBlur={handleBlur('firstName')}
                 errorMessage={
                   errors.firstName && touched.firstName
@@ -88,7 +105,7 @@ const Account = () => {
                 autoCorrect={false}
                 inputStyle={{color: Colors.secondary}}
                 value={values.lastName}
-                onChange={handleChange('lastName')}
+                onChangeText={handleChange('lastName')}
                 onBlur={handleBlur('lastName')}
                 errorMessage={
                   errors.lastName && touched.lastName
@@ -108,7 +125,7 @@ const Account = () => {
                 autoCapitalize="none"
                 inputStyle={{color: Colors.secondary}}
                 value={values.phoneNumber}
-                onChange={handleChange('phoneNumber')}
+                onChangeText={handleChange('phoneNumber')}
                 onBlur={handleBlur('phoneNumber')}
                 errorMessage={
                   errors.phoneNumber && touched.phoneNumber
@@ -127,7 +144,7 @@ const Account = () => {
                 autoCorrect={false}
                 inputStyle={{color: Colors.secondary}}
                 value={values.address}
-                onChange={handleChange('address')}
+                onChangeText={handleChange('address')}
                 onBlur={handleBlur('address')}
                 errorMessage={
                   errors.address && touched.address ? errors.address : undefined
@@ -140,6 +157,7 @@ const Account = () => {
             </View>
             <View style={styles.actionsContainer}>
               <Button
+                disabled={isLoading}
                 color="error"
                 style={styles.actions}
                 onPress={() => setIsInEditMode(false)}>
@@ -181,7 +199,10 @@ const Account = () => {
       </View>
       <View style={styles.fieldContainer}>
         <Text style={styles.field}>
-          Address: {address ? address : 'No Address found'}
+          Address:{' '}
+          {address
+            ? address
+            : 'No Address found, please add your address to successfully order'}
         </Text>
       </View>
       <View style={styles.actionsContainer}>
