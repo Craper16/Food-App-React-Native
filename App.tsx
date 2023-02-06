@@ -5,6 +5,7 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {Provider} from 'react-redux';
 import {store} from './src/redux/store';
 import AppNavigation from './src/navigation/AppNavigation';
+import Toast from 'react-native-toast-message';
 
 const theme = createTheme({
   components: {
@@ -23,6 +24,7 @@ const App = () => {
         <SafeAreaProvider>
           <ThemeProvider theme={theme}>
             <AppNavigation />
+            <Toast />
           </ThemeProvider>
         </SafeAreaProvider>
       </QueryClientProvider>

@@ -10,6 +10,7 @@ import {Icon} from '@rneui/themed';
 import {StackScreenProps} from '@react-navigation/stack';
 import {SettingsStackParams} from '../../navigation/settings/SettingsNavigation';
 import {defaultOrders} from '../../redux/orders/ordersSlice';
+import {defaultUpgrades} from '../../redux/upgrades/upgradesSlice';
 
 type props = StackScreenProps<SettingsStackParams, 'Settings'>;
 
@@ -22,6 +23,7 @@ const Settings = ({navigation}: props) => {
     dispatch(defaultAuth());
     dispatch(defaultMeals());
     dispatch(defaultOrders());
+    dispatch(defaultUpgrades());
   };
 
   return (

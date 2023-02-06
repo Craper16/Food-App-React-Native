@@ -1,23 +1,33 @@
 import {Text, StyleSheet, View, ScrollView, Alert} from 'react-native';
 import React from 'react';
-import {Overlay, Button, Icon, Input} from '@rneui/themed';
+import {Overlay, Button, Icon, Input, CheckBox} from '@rneui/themed';
 import {Colors} from '../../constants/colors/colorsConsts';
 import {MealData} from '../../interfaces/meals/mealsInterfaces';
 import {useAppDispatch} from '../../redux/hooks';
-import {removeMeal} from '../../redux/orders/ordersSlice';
-import {FlashList} from '@shopify/flash-list';
+import {
+  addUpgrade,
+  removeMeal,
+  removeUpgrade,
+} from '../../redux/orders/ordersSlice';
+import {UpgradeModel} from '../../interfaces/upgrades/upgradesInterfaces';
 
 type props = {
   isVisible: boolean;
   meals: MealData[];
+  upgrades: UpgradeModel[];
+  orderUpgrades: UpgradeModel[];
   toggleOverlay: () => void;
   comments: string;
   isError: boolean;
   errorMessage: string | null;
   onCommentTextChange: (text: string) => void;
   onOrderNow: () => void;
+  setIsDelivery: () => void;
+  setIsTakeaway: () => void;
   total: number;
   buttonLoading: boolean;
+  isDelivery: boolean;
+  isTakeaway: boolean;
 };
 
 const OrderOverlay = ({
@@ -26,11 +36,17 @@ const OrderOverlay = ({
   comments,
   onCommentTextChange,
   onOrderNow,
+  orderUpgrades,
   errorMessage,
   isError,
   meals,
   total,
   buttonLoading,
+  isDelivery,
+  isTakeaway,
+  setIsDelivery,
+  setIsTakeaway,
+  upgrades,
 }: props) => {
   const dispatch = useAppDispatch();
 
@@ -48,45 +64,116 @@ const OrderOverlay = ({
             <Text style={styles.mealsEmpty}>No meals added</Text>
           ) : (
             meals.map((meal, i) => (
-              <View key={i} style={styles.mealContainer}>
-                <Button
-                  onPress={() =>
-                    Alert.alert(
-                      `Delete ${meal.title}`,
-                      `Are you sure you want to delete ${meal.title}?`,
-                      [
-                        {text: 'Cancel', style: 'cancel'},
-                        {
-                          text: 'Delete',
-                          style: 'destructive',
-                          onPress: () => dispatch(removeMeal({mealIndex: i})),
-                        },
-                      ],
-                    )
-                  }
-                  loading={buttonLoading}
-                  size="sm"
-                  type="clear"
-                  icon={<Icon type="font-awesome" name="trash" color="red" />}
-                />
-                <Text style={styles.mealTitle}>{meal.title}</Text>
-                <Text>{`$${meal.price}`}</Text>
+              <View key={i}>
+                <View style={styles.mealContainer}>
+                  <Button
+                    onPress={() =>
+                      Alert.alert(
+                        `Delete ${meal.title}`,
+                        `Are you sure you want to delete ${meal.title}?`,
+                        [
+                          {text: 'Cancel', style: 'cancel'},
+                          {
+                            text: 'Delete',
+                            style: 'destructive',
+                            onPress: () => dispatch(removeMeal({mealIndex: i})),
+                          },
+                        ],
+                      )
+                    }
+                    loading={buttonLoading}
+                    size="sm"
+                    type="clear"
+                    icon={<Icon type="font-awesome" name="trash" color="red" />}
+                  />
+                  <Text style={styles.mealTitle}>{meal.title}</Text>
+                  <Text>{`$${meal.price}`}</Text>
+                </View>
               </View>
             ))
           )}
         </View>
-        <View>
-          <Input
-            style={styles.inputField}
-            placeholder="Comment"
-            leftIcon={{type: 'font-awesome', name: 'comment'}}
-            value={comments}
-            onChangeText={onCommentTextChange}
-          />
-        </View>
-        <View style={styles.totalContainer}>
-          <Text style={styles.totalStyle}>{`TOTAL $${total}`}</Text>
-        </View>
+        {meals.length !== 0 && (
+          <View>
+            <View>
+              {upgrades.map((upgrade, i) => (
+                <Button
+                  key={i}
+                  icon={
+                    <Icon type="material-community" name="plus" color="green" />
+                  }
+                  color="secondary"
+                  type="clear"
+                  style={styles.upgradesActions}
+                  onPress={() => dispatch(addUpgrade(upgrade))}>
+                  {`${upgrade.title} for $${upgrade.price}`}
+                </Button>
+              ))}
+            </View>
+            <Text style={styles.textSecondary}>{`Upgrades`.toUpperCase()}</Text>
+            <View>
+              {orderUpgrades.length === 0 ? (
+                <Text style={styles.mealsEmpty}>No upgrades added</Text>
+              ) : (
+                orderUpgrades.map((orderUpgrade, i) => (
+                  <View key={i}>
+                    <View style={styles.mealContainer}>
+                      <Button
+                        onPress={() =>
+                          Alert.alert(
+                            `Delete ${orderUpgrade.title}`,
+                            `Are you sure you want to delete ${orderUpgrade.title}?`,
+                            [
+                              {text: 'Cancel', style: 'cancel'},
+                              {
+                                text: 'Delete',
+                                style: 'destructive',
+                                onPress: () =>
+                                  dispatch(removeUpgrade({upgradeIndex: i})),
+                              },
+                            ],
+                          )
+                        }
+                        loading={buttonLoading}
+                        size="sm"
+                        type="clear"
+                        icon={
+                          <Icon type="font-awesome" name="trash" color="red" />
+                        }
+                      />
+                      <Text style={styles.mealTitle}>{orderUpgrade.title}</Text>
+                      <Text>{`$${orderUpgrade.price}`}</Text>
+                    </View>
+                  </View>
+                ))
+              )}
+            </View>
+            <View>
+              <Input
+                style={styles.inputField}
+                placeholder="Comment"
+                leftIcon={{type: 'font-awesome', name: 'comment'}}
+                value={comments}
+                onChangeText={onCommentTextChange}
+              />
+            </View>
+            <View style={styles.totalContainer}>
+              <Text style={styles.totalStyle}>{`TOTAL $${total}`}</Text>
+            </View>
+            <View style={styles.checkBoxesContainer}>
+              <CheckBox
+                title="Delivery"
+                checked={isDelivery}
+                onPress={setIsDelivery}
+              />
+              <CheckBox
+                title="Takeaway"
+                checked={isTakeaway}
+                onPress={setIsTakeaway}
+              />
+            </View>
+          </View>
+        )}
         <Button
           style={styles.actions}
           color="secondary"
@@ -99,6 +186,7 @@ const OrderOverlay = ({
               iconStyle={{marginRight: 10}}
             />
           }
+          loading={buttonLoading}
           title="Order now"
           onPress={() => onOrderNow()}
         />
@@ -120,6 +208,9 @@ const styles = StyleSheet.create({
   actions: {
     margin: 12,
     marginTop: '100%',
+  },
+  upgradesActions: {
+    margin: 5,
   },
   textPrimary: {
     marginVertical: 20,
@@ -162,6 +253,11 @@ const styles = StyleSheet.create({
   },
   mealTitle: {
     fontSize: 17,
+  },
+  checkBoxesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    margin: 4,
   },
   totalContainer: {
     margin: 'auto',

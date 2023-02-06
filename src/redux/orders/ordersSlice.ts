@@ -1,13 +1,16 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {MealData} from '../../interfaces/meals/mealsInterfaces';
+import {UpgradeModel} from '../../interfaces/upgrades/upgradesInterfaces';
 
 interface OrdersModel {
   meals: MealData[];
+  orderUpgrades: UpgradeModel[];
   total: number;
 }
 
 const initialState: OrdersModel = {
   meals: [],
+  orderUpgrades: [],
   total: 0,
 };
 
@@ -17,6 +20,7 @@ const ordersSlice = createSlice({
   reducers: {
     defaultOrders: state => {
       state.meals = initialState.meals;
+      state.orderUpgrades = initialState.orderUpgrades;
       state.total = initialState.total;
     },
     addMeal: (state, action: PayloadAction<MealData>) => {
@@ -33,9 +37,26 @@ const ordersSlice = createSlice({
       ];
       state.total = state.total - mealToDelete!.price;
     },
+    addUpgrade: (state, action: PayloadAction<UpgradeModel>) => {
+      state.orderUpgrades = [action.payload, ...state.orderUpgrades];
+      state.total = state.total + action.payload.price;
+    },
+    removeUpgrade: (state, action: PayloadAction<{upgradeIndex: number}>) => {
+      const upgradeToDelete = state.orderUpgrades.find(
+        (upgrade, i) => i === action.payload.upgradeIndex,
+      );
+
+      state.orderUpgrades = [
+        ...state.orderUpgrades.filter(
+          (upgrade, i) => i !== action.payload.upgradeIndex,
+        ),
+      ];
+      state.total = state.total - upgradeToDelete!.price;
+    },
   },
 });
 
-export const {defaultOrders, removeMeal, addMeal} = ordersSlice.actions;
+export const {defaultOrders, removeMeal, addMeal, addUpgrade, removeUpgrade} =
+  ordersSlice.actions;
 
 export default ordersSlice.reducer;

@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 
+import Toast from 'react-native-toast-message';
+
 import {NavigationContainer} from '@react-navigation/native';
 
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
@@ -9,10 +11,17 @@ import {BottomRootStack} from './bottomRootStack/BottomNavigator';
 import {Badge, Icon} from '@rneui/themed';
 import {ScrollView, View} from 'react-native';
 import OrderOverlay from '../components/orders/OrderOverlay';
-import {useMutation} from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import {addOrder} from '../helpers/orders/ordersHelpers';
 import {ErrorResponse} from '../interfaces/auth/authInterfaces';
 import {defaultOrders} from '../redux/orders/ordersSlice';
+import {fetchUpgrades} from '../helpers/upgrades/upgradesHelpers';
+import {setUpgrades} from '../redux/upgrades/upgradesSlice';
+
+export enum OrderMethod {
+  takeaway = 'Takeaway',
+  delivery = 'Delivery',
+}
 
 export type RootStackParams = {
   AuthStack: undefined;
@@ -24,23 +33,70 @@ const RootStack = createStackNavigator<RootStackParams>();
 const AppNavigation = () => {
   const dispatch = useAppDispatch();
 
+  const isAuth = useAppSelector(state => !!state.auth.access_token);
+  const {meals, orderUpgrades, total} = useAppSelector(state => state.orders);
+  const {upgrades} = useAppSelector(state => state.upgrades);
+
+  console.log(upgrades);
+
   const [openOverlay, setOpenOverlay] = useState(false);
   const [comments, setComments] = useState('');
+  const [isDelivery, setIsDelivery] = useState(true);
+  const [isTakeaway, setIsTakeaway] = useState(false);
+  const [orderMethod, setOrderMethod] = useState<OrderMethod>(
+    OrderMethod.delivery,
+  );
 
-  const isAuth = useAppSelector(state => !!state.auth.access_token);
-  const {meals, total} = useAppSelector(state => state.orders);
+  useEffect(() => {
+    if (isDelivery) {
+      setOrderMethod(OrderMethod.delivery);
+    } else if (isTakeaway) {
+      setOrderMethod(OrderMethod.takeaway);
+    }
+  }, [isDelivery, isTakeaway]);
 
-  console.log(meals);
+  const upgradesQuery = useQuery({
+    queryKey: ['upgrades'],
+    queryFn: fetchUpgrades,
+    refetchOnReconnect: false,
+    enabled: false,
+    refetchOnMount: false,
+  });
 
   const {data, error, isError, isLoading, mutate, isSuccess} = useMutation({
     mutationFn: addOrder,
   });
 
-  console.log(data);
+  const getUpgradesQueryData = async () => {
+    const {data, isError, error} = await upgradesQuery.refetch();
+    if (isError) {
+      return Toast.show({
+        type: 'error',
+        text1:
+          `${(error as ErrorResponse)?.response?.data?.message}` ||
+          `${(error as Error).message}`,
+        text2: 'An error has occured please check your internet connection',
+      });
+    }
+    return dispatch(setUpgrades(data!));
+  };
+
+  useEffect(() => {
+    if (openOverlay) {
+      getUpgradesQueryData();
+    }
+  }, [openOverlay]);
 
   useEffect(() => {
     if (isSuccess) {
       dispatch(defaultOrders());
+      Toast.show({
+        type: 'success',
+        text1: `${data.message}`,
+        text2: 'Your order will be ready in aproximatley 25 minutes',
+        position: 'top',
+      });
+      setOpenOverlay(false);
     }
   }, [isSuccess, dispatch]);
 
@@ -69,15 +125,19 @@ const AppNavigation = () => {
                     style={{margin: 12}}
                     onPress={() => setOpenOverlay(true)}
                   />
-                  <Badge
-                    status="success"
-                    value={meals.length}
-                    containerStyle={{position: 'absolute', top: -6, right: 5}}
-                  />
+                  {meals.length === 0 ? null : (
+                    <Badge
+                      status="success"
+                      value={meals.length}
+                      containerStyle={{position: 'absolute', top: -6, right: 5}}
+                    />
+                  )}
                   <ScrollView>
                     <OrderOverlay
                       total={total}
                       meals={meals}
+                      upgrades={upgrades}
+                      orderUpgrades={orderUpgrades}
                       buttonLoading={isLoading}
                       isVisible={openOverlay}
                       toggleOverlay={() =>
@@ -85,13 +145,30 @@ const AppNavigation = () => {
                       }
                       comments={comments}
                       onCommentTextChange={text => setComments(text)}
-                      onOrderNow={() => mutate({meals, upgrades: [], comments})}
+                      onOrderNow={() =>
+                        mutate({
+                          meals,
+                          upgrades: orderUpgrades,
+                          comments,
+                          method: orderMethod,
+                        })
+                      }
                       errorMessage={
                         (error as ErrorResponse)?.response?.data?.message ||
                         (error as Error)?.message ||
                         null
                       }
                       isError={isError}
+                      isDelivery={isDelivery}
+                      isTakeaway={isTakeaway}
+                      setIsDelivery={() => {
+                        setIsDelivery(true);
+                        setIsTakeaway(false);
+                      }}
+                      setIsTakeaway={() => {
+                        setIsTakeaway(true);
+                        setIsDelivery(false);
+                      }}
                     />
                   </ScrollView>
                 </View>
