@@ -37,8 +37,6 @@ const AppNavigation = () => {
   const {meals, orderUpgrades, total} = useAppSelector(state => state.orders);
   const {upgrades} = useAppSelector(state => state.upgrades);
 
-  console.log(upgrades);
-
   const [openOverlay, setOpenOverlay] = useState(false);
   const [comments, setComments] = useState('');
   const [isDelivery, setIsDelivery] = useState(true);

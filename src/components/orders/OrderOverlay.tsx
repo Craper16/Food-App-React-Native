@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     marginTop: '100%',
   },
   upgradesActions: {
-    margin: 5,
+    margin: 10,
   },
   textPrimary: {
     marginVertical: 20,
