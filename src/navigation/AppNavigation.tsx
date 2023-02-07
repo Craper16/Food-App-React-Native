@@ -95,6 +95,7 @@ const AppNavigation = () => {
         position: 'top',
       });
       setOpenOverlay(false);
+      setComments('');
     }
   }, [isSuccess, dispatch]);
 

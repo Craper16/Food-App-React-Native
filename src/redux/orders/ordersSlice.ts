@@ -1,14 +1,17 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {MealData} from '../../interfaces/meals/mealsInterfaces';
+import {OrderResponse} from '../../interfaces/orders/ordersInterfaces';
 import {UpgradeModel} from '../../interfaces/upgrades/upgradesInterfaces';
 
 interface OrdersModel {
+  userOrders: OrderResponse[];
   meals: MealData[];
   orderUpgrades: UpgradeModel[];
   total: number;
 }
 
 const initialState: OrdersModel = {
+  userOrders: [],
   meals: [],
   orderUpgrades: [],
   total: 0,
@@ -19,6 +22,7 @@ const ordersSlice = createSlice({
   initialState,
   reducers: {
     defaultOrders: state => {
+      state.userOrders = initialState.userOrders;
       state.meals = initialState.meals;
       state.orderUpgrades = initialState.orderUpgrades;
       state.total = initialState.total;
@@ -53,10 +57,23 @@ const ordersSlice = createSlice({
       ];
       state.total = state.total - upgradeToDelete!.price;
     },
+    setUserOrders: (state, action: PayloadAction<OrderResponse[]>) => {
+      state.userOrders = [...action.payload];
+    },
+    resetUserOrders: state => {
+      state.userOrders = initialState.userOrders;
+    },
   },
 });
 
-export const {defaultOrders, removeMeal, addMeal, addUpgrade, removeUpgrade} =
-  ordersSlice.actions;
+export const {
+  defaultOrders,
+  removeMeal,
+  addMeal,
+  addUpgrade,
+  removeUpgrade,
+  setUserOrders,
+  resetUserOrders,
+} = ordersSlice.actions;
 
 export default ordersSlice.reducer;

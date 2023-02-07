@@ -12,15 +12,18 @@ import {useQuery} from '@tanstack/react-query';
 import {fetchMeal} from '../../helpers/menu/menuHelpers';
 import {ErrorResponse} from '../../interfaces/auth/authInterfaces';
 import {Colors} from '../../constants/colors/colorsConsts';
-import {Button, Header, Image} from '@rneui/themed';
-import {Skeleton} from '@rneui/base';
+import {Button, Image} from '@rneui/themed';
+import {useAppDispatch} from '../../redux/hooks';
+import {addMeal} from '../../redux/orders/ordersSlice';
 
 type props = StackScreenProps<MenuStackParams, 'MealDetails'>;
 
-const MealDetails = ({route, navigation}: props) => {
+const MealDetails = ({route}: props) => {
+  const dispatch = useAppDispatch();
+
   const {mealId} = route.params;
 
-  const {data, error, isError, isFetching, isSuccess} = useQuery({
+  const {data, error, isError, isFetching} = useQuery({
     queryKey: ['meal'],
     queryFn: async () => await fetchMeal(mealId),
   });
@@ -53,7 +56,7 @@ const MealDetails = ({route, navigation}: props) => {
         containerStyle={styles.imageStyle}
       />
       <Text style={styles.textField}>{data?.description}</Text>
-      <Button color="secondary" onPress={() => console.log(data?._id)}>
+      <Button color="secondary" onPress={() => dispatch(addMeal(data!))}>
         Add to order
       </Button>
     </ScrollView>

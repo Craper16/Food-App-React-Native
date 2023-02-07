@@ -3,11 +3,13 @@ import {Icon, Text} from '@rneui/base';
 import {Colors} from '../../constants/colors/colorsConsts';
 import {CategoriesScreenStack} from '../categories/CategoriesNavigation';
 import {MenuScreenStack} from '../menu/MenuNavigationStack';
+import {OrdersScreenStack} from '../orders/OrdersNavigation';
 import {SettingsScreenStack} from '../settings/SettingsNavigation';
 
 export type BottomRootStackNavigatorParams = {
   MenuStack: undefined;
   CategoriesStack: undefined;
+  OrdersStack: undefined;
   SettingsStack: undefined;
 };
 
@@ -30,6 +32,9 @@ export const BottomRootStack = () => {
             case 'CategoriesStack':
               iconName = focused ? 'category' : 'category';
               break;
+            case 'OrdersStack':
+              iconName = focused ? 'assignment' : 'assignment';
+              break;
             case 'SettingsStack':
               iconName = focused ? 'settings' : 'settings';
               break;
@@ -45,6 +50,9 @@ export const BottomRootStack = () => {
               break;
             case 'CategoriesStack':
               children = 'Categories';
+              break;
+            case 'OrdersStack':
+              children = 'Orders';
               break;
             case 'SettingsStack':
               children = 'Settings';
@@ -65,6 +73,10 @@ export const BottomRootStack = () => {
       <BottomStackNavigator.Screen
         name="CategoriesStack"
         component={CategoriesScreenStack}
+      />
+      <BottomStackNavigator.Screen
+        name="OrdersStack"
+        component={OrdersScreenStack}
       />
       <BottomStackNavigator.Screen
         name="SettingsStack"

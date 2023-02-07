@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
@@ -37,7 +38,7 @@ const Menu = ({navigation}: props) => {
 
   const {meals, filteredMeals} = useAppSelector(state => state.meals);
 
-  const {isError, error, isFetching, data, refetch} = useQuery({
+  const {isError, error, isFetching, refetch} = useQuery({
     queryKey: ['meals'],
     queryFn: fetchMeals,
     retry: true,
@@ -70,7 +71,7 @@ const Menu = ({navigation}: props) => {
   if (isError) {
     return (
       <View>
-        <Text>
+        <Text style={styles.apiError}>
           {(error as ErrorResponse).response.data.message ||
             (error as Error).message ||
             'Please check your network connection'}
@@ -119,6 +120,12 @@ const styles = StyleSheet.create({
   },
   inputField: {
     color: Colors.secondary,
+  },
+  apiError: {
+    fontSize: 20,
+    marginTop: 20,
+    textAlign: 'center',
+    color: 'tomato',
   },
 });
 
