@@ -11,6 +11,8 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import Order from '../../components/orders/Order';
 import {StackScreenProps} from '@react-navigation/stack';
 import {OrdersStackParams} from '../../navigation/orders/OrdersNavigation';
+import Toast from 'react-native-toast-message';
+import {ErrorResponse} from '../../interfaces/auth/authInterfaces';
 
 type props = StackScreenProps<OrdersStackParams, 'Orders'>;
 
@@ -34,6 +36,25 @@ const Orders = ({navigation}: props) => {
     await refetch();
     setIsRefreshing(false);
   };
+
+  useEffect(() => {
+    if (isError) {
+      Toast.show({
+        type: 'error',
+        text1: 'An error has occured',
+        text2:
+          (error as ErrorResponse)?.response?.data?.message ||
+          'Please check your network connection and try again',
+        autoHide: isError ? false : true,
+      });
+    } else {
+      Toast.hide();
+    }
+  }, [isError]);
+
+  if (isError) {
+    return <View style={styles.screen}></View>;
+  }
 
   useEffect(() => {
     if (userOrders.length === 0 && data?.length !== 0) {

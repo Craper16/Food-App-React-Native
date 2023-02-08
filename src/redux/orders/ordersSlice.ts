@@ -63,6 +63,11 @@ const ordersSlice = createSlice({
     resetUserOrders: state => {
       state.userOrders = initialState.userOrders;
     },
+    removeUserOrder: (state, action: PayloadAction<{orderId: string}>) => {
+      state.userOrders = state.userOrders.filter(
+        order => order._id !== action.payload.orderId,
+      );
+    },
   },
 });
 
@@ -74,6 +79,7 @@ export const {
   removeUpgrade,
   setUserOrders,
   resetUserOrders,
+  removeUserOrder,
 } = ordersSlice.actions;
 
 export default ordersSlice.reducer;

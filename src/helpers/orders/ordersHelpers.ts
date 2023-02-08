@@ -46,3 +46,17 @@ export const addOrder = async (orderDetails: OrderData) => {
 
   return data;
 };
+
+export const deleteOrder = async (orderId: string) => {
+  const access_token = await fetchAccessToken();
+
+  const response = await instance.delete(`/orders/${orderId}`, {
+    headers: {
+      Authorization: `Bearer ${(access_token as UserCredentials).username}`,
+    },
+  });
+
+  const data = response.data;
+
+  return data;
+};
