@@ -53,3 +53,16 @@ export const updateUser = async (updateData: updateUserModel) => {
   const data: userDataModel = response.data;
   return data;
 };
+
+export const refreshAccessToken = async ({
+  refresh_token,
+}: {
+  refresh_token: string;
+}) => {
+  const response = await instance.post('/auth/refresh', {
+    refresh_token: refresh_token,
+  });
+
+  const data: {access_token: string} = response.data;
+  return data;
+};

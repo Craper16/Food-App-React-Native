@@ -7,6 +7,7 @@ import {store} from './src/redux/store';
 import AppNavigation from './src/navigation/AppNavigation';
 import Toast from 'react-native-toast-message';
 
+
 const theme = createTheme({
   components: {
     Button: {
