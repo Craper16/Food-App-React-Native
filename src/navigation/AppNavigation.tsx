@@ -111,10 +111,13 @@ const AppNavigation = () => {
 
   useEffect(() => {
     checkAndRefreshAccessToken();
+  }, []);
+
+  useEffect(() => {
     if (refreshMutation.isSuccess) {
       handleStoreDataIfSuccess();
     }
-  }, [isLoading, refreshMutation.isSuccess]);
+  }, [refreshMutation.isSuccess]);
 
   const getUpgradesQueryData = async () => {
     const {data, isError, error} = await upgradesQuery.refetch();

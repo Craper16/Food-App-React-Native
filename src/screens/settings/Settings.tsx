@@ -19,11 +19,11 @@ const Settings = ({navigation}: props) => {
   const dispatch = useAppDispatch();
 
   const handleLogout = async () => {
-    await clearKeychain();
     dispatch(defaultAuth());
     dispatch(defaultMeals());
     dispatch(defaultOrders());
     dispatch(defaultUpgrades());
+    await clearKeychain();
   };
 
   return (
