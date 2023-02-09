@@ -1,4 +1,4 @@
-import {View, StyleSheet, Alert} from 'react-native';
+import {View, Text, StyleSheet, Alert} from 'react-native';
 import React from 'react';
 import {useAppDispatch} from '../../redux/hooks';
 import {defaultAuth} from '../../redux/auth/authSlice';
@@ -19,16 +19,11 @@ const Settings = ({navigation}: props) => {
   const dispatch = useAppDispatch();
 
   const handleLogout = async () => {
-    await clearKeychain()
-      .then(() => {
-        dispatch(defaultAuth());
-        dispatch(defaultMeals());
-        dispatch(defaultOrders());
-        dispatch(defaultUpgrades());
-      })
-      .catch((error: Error) => {
-        console.log(error);
-      });
+    dispatch(defaultAuth());
+    dispatch(defaultMeals());
+    dispatch(defaultOrders());
+    dispatch(defaultUpgrades());
+    await clearKeychain();
   };
 
   return (

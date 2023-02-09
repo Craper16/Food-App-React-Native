@@ -100,16 +100,14 @@ const AppNavigation = () => {
   };
 
   const handleStoreDataIfSuccess = async () => {
-    await fetchAccessToken()
-      .then(token => {
-        if (token) {
-          handleStoreData({
-            access_token: refreshMutation.data?.access_token!,
-            refresh_token: (token as UserCredentials).password,
-          });
-        }
-      })
-      .catch((error: Error) => console.log(error.message));
+    const tokens = await fetchAccessToken();
+
+    if ((tokens as UserCredentials).password && refreshMutation.data) {
+      return handleStoreData({
+        access_token: refreshMutation.data.access_token!,
+        refresh_token: (tokens as UserCredentials)?.password,
+      });
+    }
   };
 
   useEffect(() => {
