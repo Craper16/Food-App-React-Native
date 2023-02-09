@@ -2,9 +2,7 @@ import {View, StyleSheet, Alert} from 'react-native';
 import React from 'react';
 import {useAppDispatch} from '../../redux/hooks';
 import {defaultAuth} from '../../redux/auth/authSlice';
-import {
-  clearKeychain,
-} from '../../helpers/keychain/keychainHelpers';
+import {clearKeychain} from '../../helpers/keychain/keychainHelpers';
 import {Button} from '@rneui/base';
 import {defaultMeals} from '../../redux/meals/mealsSlice';
 import {Colors} from '../../constants/colors/colorsConsts';
@@ -21,12 +19,16 @@ const Settings = ({navigation}: props) => {
   const dispatch = useAppDispatch();
 
   const handleLogout = async () => {
-    await clearKeychain().then(() => {
-      dispatch(defaultAuth());
-      dispatch(defaultMeals());
-      dispatch(defaultOrders());
-      dispatch(defaultUpgrades());
-    });
+    await clearKeychain()
+      .then(() => {
+        dispatch(defaultAuth());
+        dispatch(defaultMeals());
+        dispatch(defaultOrders());
+        dispatch(defaultUpgrades());
+      })
+      .catch((error: Error) => {
+        console.log(error);
+      });
   };
 
   return (

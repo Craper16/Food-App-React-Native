@@ -1,12 +1,20 @@
-import {View, Text} from 'react-native';
+import {View, Text, ScrollView, StyleSheet} from 'react-native';
 import React from 'react';
+import {Colors} from '../../constants/colors/colorsConsts';
 
 const Categories = () => {
   return (
-    <View>
+    <ScrollView style={styles.screen}>
       <Text>Categories</Text>
-    </View>
+    </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: Colors.primary,
+  },
+});
 
 export default Categories;

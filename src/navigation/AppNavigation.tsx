@@ -100,13 +100,16 @@ const AppNavigation = () => {
   };
 
   const handleStoreDataIfSuccess = async () => {
-    const tokens = await fetchAccessToken();
-    if (tokens) {
-      handleStoreData({
-        access_token: refreshMutation.data?.access_token!,
-        refresh_token: (tokens as UserCredentials).password,
-      });
-    }
+    await fetchAccessToken()
+      .then(token => {
+        if (token) {
+          handleStoreData({
+            access_token: refreshMutation.data?.access_token!,
+            refresh_token: (token as UserCredentials).password,
+          });
+        }
+      })
+      .catch((error: Error) => console.log(error.message));
   };
 
   useEffect(() => {
@@ -158,14 +161,13 @@ const AppNavigation = () => {
       <RootStack.Navigator
         initialRouteName="AuthStack"
         screenOptions={{headerShown: false}}>
-        {!isAuth && (
+        {!isAuth ? (
           <RootStack.Screen
             name="AuthStack"
             component={AuthScreenStack}
             options={{headerShown: false}}
           />
-        )}
-        {isAuth && (
+        ) : (
           <RootStack.Screen
             options={{
               headerShown: true,
