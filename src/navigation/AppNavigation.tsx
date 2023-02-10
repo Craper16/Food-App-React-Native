@@ -92,7 +92,7 @@ const AppNavigation = () => {
   const checkAndRefreshAccessToken = async () => {
     const refresh_token = await fetchAccessToken();
 
-    if (refresh_token) {
+    if ((refresh_token as UserCredentials).password) {
       return refreshMutation.mutate(
         (refresh_token as UserCredentials).password,
       );
