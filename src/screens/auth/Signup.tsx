@@ -17,7 +17,7 @@ import {Input} from '@rneui/themed';
 import {Button} from '@rneui/base';
 import {useMutation} from '@tanstack/react-query';
 import {signUpUser} from '../../helpers/auth/authHelpers';
-import {ErrorResponse, SigninData} from '../../interfaces/auth/authInterfaces';
+import {ErrorResponse, SigninData, SignupData} from '../../interfaces/auth/authInterfaces';
 import {useAppDispatch} from '../../redux/hooks';
 import {setUser, setUserTokens} from '../../redux/auth/authSlice';
 import {setKeychainTokens} from '../../helpers/keychain/keychainHelpers';
@@ -38,21 +38,21 @@ const Signup = ({navigation}: props) => {
     mutationFn: signUpUser,
   });
 
-  const handleStoreData = async (loginData: SigninData) => {
-    await setKeychainTokens(loginData.access_token!, loginData.refresh_token!);
+  const handleStoreData = async (SignupData: SignupData) => {
+    await setKeychainTokens(SignupData.access_token!, SignupData.refresh_token!);
     dispatch(
       setUser({
-        address: loginData.address!,
-        firstName: loginData.firstName!,
-        email: loginData.email!,
-        lastName: loginData.lastName!,
-        phoneNumber: loginData.phoneNumber!,
+        address: SignupData.address!,
+        firstName: SignupData.firstName!,
+        email: SignupData.email!,
+        lastName: SignupData.lastName!,
+        phoneNumber: SignupData.phoneNumber!,
       }),
     );
     dispatch(
       setUserTokens({
-        access_token: loginData.access_token!,
-        refresh_token: loginData.refresh_token!,
+        access_token: SignupData.access_token!,
+        refresh_token: SignupData.refresh_token!,
       }),
     );
   };

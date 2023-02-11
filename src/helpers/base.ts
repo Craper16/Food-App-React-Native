@@ -4,8 +4,7 @@ import dayjs from 'dayjs';
 import jwtDecode from 'jwt-decode';
 import {UserCredentials} from 'react-native-keychain';
 import {SigninData} from '../interfaces/auth/authInterfaces';
-import {setUserTokens} from '../redux/auth/authSlice';
-import {useAppDispatch} from '../redux/hooks';
+import {setUser, setUserTokens} from '../redux/auth/authSlice';
 import {store} from '../redux/store';
 import {fetchAccessToken, setKeychainTokens} from './keychain/keychainHelpers';
 
@@ -30,12 +29,21 @@ instance.interceptors.request.use(async req => {
 
   const data: SigninData = response.data;
 
-  await setKeychainTokens(data.access_token!, data.refresh_token!);
+  await setKeychainTokens(data?.access_token!, data?.refresh_token!);
 
   dispatch(
     setUserTokens({
       access_token: data?.access_token!,
       refresh_token: data?.refresh_token!,
+    }),
+  );
+  dispatch(
+    setUser({
+      firstName: data?.firstName!,
+      lastName: data?.lastName!,
+      address: data?.address!,
+      email: data?.email!,
+      phoneNumber: data?.phoneNumber!,
     }),
   );
 

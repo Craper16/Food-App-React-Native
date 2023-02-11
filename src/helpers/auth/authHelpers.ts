@@ -1,3 +1,5 @@
+import {API_KEY} from '@env';
+import axios from 'axios';
 import {UserCredentials} from 'react-native-keychain';
 import {
   credentials,
@@ -13,7 +15,7 @@ import {fetchAccessToken} from '../keychain/keychainHelpers';
 export const signInUser = async (
   credentials: credentials,
 ): Promise<SigninData> => {
-  const response = await instance.post('/auth/signin', credentials);
+  const response = await axios.post(`${API_KEY}/auth/signin`, credentials);
 
   const data: SigninData = response.data;
   return data;
@@ -22,7 +24,7 @@ export const signInUser = async (
 export const signUpUser = async (
   userData: signUpDataModel,
 ): Promise<SignupData> => {
-  const response = await instance.post('/auth/signup', userData);
+  const response = await instance.post(`${API_KEY}/auth/signup`, userData);
 
   const data: SignupData = response.data;
   return data;
@@ -59,7 +61,7 @@ export const refreshAccessToken = async ({
 }: {
   refresh_token: string;
 }) => {
-  const response = await instance.post('/auth/refresh', {
+  const response = await axios.post(`${API_KEY}/auth/refresh`, {
     refreshToken: refresh_token,
   });
 

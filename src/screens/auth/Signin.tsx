@@ -61,6 +61,8 @@ const Signin = ({navigation}: props) => {
     }
   }, [isSuccess]);
 
+  console.log(error);
+
   return (
     <Formik
       initialValues={{email: '', password: ''}}
@@ -161,6 +163,7 @@ const Signin = ({navigation}: props) => {
                 <View style={styles.apiErrorContainer}>
                   <Text style={styles.apiError}>
                     {(error as ErrorResponse)?.response?.data?.message ||
+                      (error as Error).message ||
                       'Network error check your internet connection and try again'}
                   </Text>
                 </View>
