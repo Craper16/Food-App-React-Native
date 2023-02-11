@@ -15,13 +15,9 @@ import {Colors} from '../../constants/colors/colorsConsts';
 import {signUpValidations} from '../../validations/authValidations';
 import {Input} from '@rneui/themed';
 import {Button} from '@rneui/base';
-import {useMutation, useQuery} from '@tanstack/react-query';
-import {getUserData, signUpUser} from '../../helpers/auth/authHelpers';
-import {
-  ErrorResponse,
-  SigninData,
-  userDataModel,
-} from '../../interfaces/auth/authInterfaces';
+import {useMutation} from '@tanstack/react-query';
+import {signUpUser} from '../../helpers/auth/authHelpers';
+import {ErrorResponse, SigninData} from '../../interfaces/auth/authInterfaces';
 import {useAppDispatch} from '../../redux/hooks';
 import {setUser, setUserTokens} from '../../redux/auth/authSlice';
 import {setKeychainTokens} from '../../helpers/keychain/keychainHelpers';
@@ -38,23 +34,27 @@ const Signup = ({navigation}: props) => {
   const [viewPassword, setViewPassword] = useState(true);
   const [viewConfirmPassword, setViewConfirmPassword] = useState(true);
 
-  const {refetch} = useQuery({
-    queryKey: ['userData'],
-    queryFn: getUserData,
-    enabled: false,
-    refetchOnMount: false,
-    cacheTime: 0,
-  });
-
   const {error, isError, isLoading, mutate, data, isSuccess} = useMutation({
     mutationFn: signUpUser,
   });
 
   const handleStoreData = async (loginData: SigninData) => {
-    await setKeychainTokens(loginData.access_token, loginData.refresh_token);
-    const {data} = await refetch();
-    dispatch(setUser({...data!}));
-    dispatch(setUserTokens({...loginData}));
+    await setKeychainTokens(loginData.access_token!, loginData.refresh_token!);
+    dispatch(
+      setUser({
+        address: loginData.address!,
+        firstName: loginData.firstName!,
+        email: loginData.email!,
+        lastName: loginData.lastName!,
+        phoneNumber: loginData.phoneNumber!,
+      }),
+    );
+    dispatch(
+      setUserTokens({
+        access_token: loginData.access_token!,
+        refresh_token: loginData.refresh_token!,
+      }),
+    );
   };
 
   useEffect(() => {
