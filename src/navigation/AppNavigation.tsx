@@ -17,13 +17,14 @@ import {ErrorResponse, SigninData} from '../interfaces/auth/authInterfaces';
 import {defaultOrders} from '../redux/orders/ordersSlice';
 import {fetchUpgrades} from '../helpers/upgrades/upgradesHelpers';
 import {setUpgrades} from '../redux/upgrades/upgradesSlice';
-import {getUserData, refreshAccessToken} from '../helpers/auth/authHelpers';
+import {refreshAccessToken} from '../helpers/auth/authHelpers';
 import {
   fetchAccessToken,
   setKeychainTokens,
 } from '../helpers/keychain/keychainHelpers';
 import {UserCredentials} from 'react-native-keychain';
 import {setUser, setUserTokens} from '../redux/auth/authSlice';
+import StartupScreen from '../screens/StartupScreen';
 
 export enum OrderMethod {
   takeaway = 'Takeaway',
@@ -31,6 +32,7 @@ export enum OrderMethod {
 }
 
 export type RootStackParams = {
+  StartupScreen: undefined;
   AuthStack: undefined;
   BottomRootStack: undefined;
 };
@@ -41,6 +43,7 @@ const AppNavigation = () => {
   const dispatch = useAppDispatch();
 
   const isAuth = useAppSelector(state => !!state.auth.access_token);
+
   const {meals, orderUpgrades, total} = useAppSelector(state => state.orders);
   const {upgrades} = useAppSelector(state => state.upgrades);
 
@@ -68,12 +71,6 @@ const AppNavigation = () => {
     refetchOnMount: false,
   });
 
-  const {refetch} = useQuery({
-    queryKey: ['userData'],
-    queryFn: getUserData,
-    enabled: false,
-  });
-
   const {data, error, isError, isLoading, mutate, isSuccess} = useMutation({
     mutationFn: addOrder,
   });
@@ -83,10 +80,22 @@ const AppNavigation = () => {
   });
 
   const handleStoreData = async (loginData: SigninData) => {
-    await setKeychainTokens(loginData.access_token, loginData.refresh_token);
-    const {data} = await refetch();
-    dispatch(setUser({...data!}));
-    dispatch(setUserTokens({...loginData}));
+    await setKeychainTokens(loginData.access_token!, loginData.refresh_token!);
+    dispatch(
+      setUser({
+        firstName: loginData.firstName!,
+        lastName: loginData.lastName!,
+        address: loginData.address!,
+        email: loginData.email!,
+        phoneNumber: loginData.phoneNumber!,
+      }),
+    );
+    dispatch(
+      setUserTokens({
+        access_token: loginData.access_token!,
+        refresh_token: loginData.refresh_token!,
+      }),
+    );
   };
 
   const checkAndRefreshAccessToken = async () => {
@@ -101,12 +110,8 @@ const AppNavigation = () => {
 
   const handleStoreDataIfSuccess = async () => {
     const tokens = await fetchAccessToken();
-
     if ((tokens as UserCredentials).password && refreshMutation.data) {
-      return handleStoreData({
-        access_token: refreshMutation.data.access_token!,
-        refresh_token: (tokens as UserCredentials)?.password,
-      });
+      return handleStoreData(refreshMutation.data);
     }
   };
 
@@ -119,6 +124,19 @@ const AppNavigation = () => {
       handleStoreDataIfSuccess();
     }
   }, [refreshMutation.isSuccess]);
+
+  useEffect(() => {
+    if (refreshMutation.isError) {
+      Toast.show({
+        type: 'error',
+        text1: 'An error has occured',
+        text2:
+          (refreshMutation.error as ErrorResponse)?.response?.data?.message ||
+          'Check your network connection and try again' ||
+          'An error has occured',
+      });
+    }
+  }, [refreshMutation.isError]);
 
   const getUpgradesQueryData = async () => {
     const {data, isError, error} = await upgradesQuery.refetch();
@@ -157,9 +175,11 @@ const AppNavigation = () => {
   return (
     <NavigationContainer>
       <RootStack.Navigator
-        initialRouteName="AuthStack"
+        initialRouteName="StartupScreen"
         screenOptions={{headerShown: false}}>
-        {!isAuth ? (
+        {refreshMutation.isLoading ? (
+          <RootStack.Screen name="StartupScreen" component={StartupScreen} />
+        ) : !isAuth ? (
           <RootStack.Screen
             name="AuthStack"
             component={AuthScreenStack}

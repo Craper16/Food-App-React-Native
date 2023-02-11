@@ -16,10 +16,7 @@ import {Input} from '@rneui/themed';
 import {Button} from '@rneui/base';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {getUserData, signInUser} from '../../helpers/auth/authHelpers';
-import {
-  ErrorResponse,
-  SigninData,
-} from '../../interfaces/auth/authInterfaces';
+import {ErrorResponse, SigninData} from '../../interfaces/auth/authInterfaces';
 import {useAppDispatch} from '../../redux/hooks';
 import {setUser, setUserTokens} from '../../redux/auth/authSlice';
 import {setKeychainTokens} from '../../helpers/keychain/keychainHelpers';
@@ -35,24 +32,27 @@ const Signin = ({navigation}: props) => {
 
   const [viewPassword, setViewPassword] = useState(true);
 
-  const {refetch, isFetching} = useQuery({
-    queryKey: ['userData'],
-    queryFn: getUserData,
-    enabled: false,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    cacheTime: 0,
-  });
-
   const {error, isError, isLoading, mutate, data, isSuccess} = useMutation({
     mutationFn: signInUser,
   });
 
   const handleStoreData = async (loginData: SigninData) => {
-    await setKeychainTokens(loginData.access_token, loginData.refresh_token);
-    const {data} = await refetch();
-    dispatch(setUser({...data!}));
-    dispatch(setUserTokens({...loginData}));
+    await setKeychainTokens(loginData.access_token!, loginData.refresh_token!);
+    dispatch(
+      setUser({
+        email: loginData.email!,
+        address: loginData.address!,
+        firstName: loginData.firstName!,
+        lastName: loginData.lastName!,
+        phoneNumber: loginData.phoneNumber!,
+      }),
+    );
+    dispatch(
+      setUserTokens({
+        access_token: loginData.access_token!,
+        refresh_token: loginData.refresh_token!,
+      }),
+    );
   };
 
   useEffect(() => {
@@ -145,8 +145,8 @@ const Signin = ({navigation}: props) => {
                 <Button
                   buttonStyle={{borderRadius: 24}}
                   color="secondary"
-                  disabled={!isValid || isLoading || isFetching}
-                  loading={isLoading || isFetching}
+                  disabled={!isValid || isLoading}
+                  loading={isLoading}
                   onPress={handleSubmit}>
                   Login
                 </Button>

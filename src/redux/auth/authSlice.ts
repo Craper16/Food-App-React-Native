@@ -33,7 +33,10 @@ const authSlice = createSlice({
       state.lastName = initialState.lastName;
       state.phoneNumber = initialState.phoneNumber;
     },
-    setUserTokens: (state, action: PayloadAction<SigninData>) => {
+    setUserTokens: (
+      state,
+      action: PayloadAction<{access_token: string; refresh_token: string}>,
+    ) => {
       state.access_token = action.payload.access_token;
       state.refresh_token = action.payload.refresh_token;
     },

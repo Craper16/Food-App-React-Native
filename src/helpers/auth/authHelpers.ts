@@ -60,9 +60,9 @@ export const refreshAccessToken = async ({
   refresh_token: string;
 }) => {
   const response = await instance.post('/auth/refresh', {
-    refresh_token: refresh_token,
+    refreshToken: refresh_token,
   });
 
-  const data: {access_token: string} = response.data;
+  const data: SigninData = response.data;
   return data;
 };

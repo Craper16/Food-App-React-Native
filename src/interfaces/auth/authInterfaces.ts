@@ -31,8 +31,13 @@ export interface credentials {
 }
 
 export interface SigninData {
-  access_token: string;
-  refresh_token: string;
+  access_token?: string;
+  refresh_token?: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: number;
+  address: string;
 }
 
 export interface SignupData extends SigninData {
